@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>talk to mongo</title>
+  <script src="./index.js"></script>
+</head>
+<body>
+  <!--
+  need to make the default three fields... ?
+  onload="createFormFields('add-data', '3')"> -->
+
+<h2>mongo says hello</h2>
+<h3>here's a form to add a doc to mongo instance</h3>
+
+  <label>number of fields:</label>
+  <input type="number" id="num-fields" style="width:2em;">
+  <button onclick="createFormFields('add-data', 'num-fields')">create input fields</button>
+  <button onclick="removeFields('add-data')">remove fields</button>
+
+<form action="/mongo/post" method="POST" id="add-data">
+  <button type="submit">submit</button>
+  <button type="reset">clear</button>
+</form>
+
+<% if (data) {%>
+  <h2>your data so far</h2>
+  <ul class="data">
+    <% for (let i = 0; i < data.length; i++) { %>
+      <li class="datum" id="<%= data[i]._id %>">
+        <hr>
+        <p>
+          <h4><%= data[i].beer || data[i]._id %></h4>
+
+          <button class="delete-button" onclick="deleteFromDB(this)">delete</button>
+          <button class="edit-button"
+          onclick="editEntry(this)">edit</button>
+        </p>
+        <ul class="datum-fields">
+          <%
+          let keys = Object.keys(data[i]);
+          for (let j = 0; j < keys.length; j++){ %>
+            <li class="field"><span><%= keys[j] %>:<span><span> <%= data[i][keys[j]] %></span></li>
+            <% } %>
+          </ul>
+
+      </li>
+    <% } %>
+  </ul>
+  <% } %>
+
+
+
+
+
+</body>
+</html>
