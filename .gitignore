@@ -2,3 +2,4 @@ mongo.env
 node_modules/
 nunjucks/
 quickstart/
+MONGO_URI.key
