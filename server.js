@@ -25,7 +25,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 //logging middleware
 let timer = (req, res, next) => {
-  req.timestamp = new Date();
+  req.timestamp = new Date().toLocaleString();
   next()
 }
 
