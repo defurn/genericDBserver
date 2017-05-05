@@ -3,6 +3,8 @@ var app = express();
 var router = express.Router();
 var bodyParser = require('body-parser');
 
+var http = require('http');
+
 var chalk = require('chalk');
 var blue = chalk.bold.blue;
 var red = chalk.bold.red;
@@ -22,6 +24,11 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 
 //logging middleware
+let timer = (req, res, next) => {
+  req.timestamp = new Date();
+  next()
+}
+
 let logger = (req, res, next) => {
   if (req.method === 'GET'){
     color = blue
@@ -30,13 +37,15 @@ let logger = (req, res, next) => {
   } else if (req.method === 'POST'){
     color = green
   }
-  console.log(`/ ${color(req.method)} ${red(req.baseUrl)}
+  console.log(`/ ${color(req.method)} ${red(req.baseUrl)} ${green(req.timestamp)}
   `
   //  ${Object.keys(req)}
   // ${Object.keys(req.headers)}
   );
+
   next();
 }
+
 
 //setup mongodb and start server
 mongo.connect(MONGO_URI, (err, database) => {
@@ -79,14 +88,19 @@ router.delete('/mongo/:id', (req, res, next) => {
 });
 
 router.post('/mongo/post', (req, res, next) => {
-  let sendData = req.body;
+  let data = req.body;
+  let timestamp = { submitted_time: req.timestamp}
+
+  let sendData = Object.assign(data, timestamp);
+
   db.collection('practexpress')
-  .save(req.body, (err, result) => {
+  .save(sendData, (err, result) => {
     if (err) return err
     res.redirect('/dbcontents');
   })
 })
 
 
+app.use('*', timer);
 app.use('*', logger);
 app.use('/', router);
