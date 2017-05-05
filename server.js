@@ -14,7 +14,7 @@ app.set('view engine', 'ejs');
 var mongo = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 var port = process.env.PORT || 3030;
-var MONGO_URI   = 'mongodb://apps:apps@ds133358.mlab.com:33358/herokuapp'//process.env.MONGO_URI
+var MONGO_URI = process.env.MONGO_URI
 var db;
 
 router.use(bodyParser.json());
