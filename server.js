@@ -1,22 +1,28 @@
-var express = require('express');
-var app = express();
-var router = express.Router();
-var bodyParser = require('body-parser');
+require('dotenv').config()
 
-var http = require('http');
 
-var chalk = require('chalk');
-var blue = chalk.bold.blue;
-var red = chalk.bold.red;
-var green = chalk.bold.green;
+
+const express = require('express');
+const app = express();
+const router = express.Router();
+const bodyParser = require('body-parser');
+const http = require('http');
+
+const chalk = require('chalk');
+const blue = chalk.bold.blue;
+const red = chalk.bold.red;
+const green = chalk.bold.green;
 
 app.set('views', './views')
 app.set('view engine', 'ejs');
 
-var mongo = require('mongodb').MongoClient;
-var ObjectID = require('mongodb').ObjectID;
-var port = process.env.PORT || 3030;
-var MONGO_URI = process.env.MONGO_URI
+const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID;
+const port = process.env.PORT || 3030;
+const MONGO_URI = process.env.MONGO_URI
+const MONGO_USER = process.env.MONGO_USER
+const MONGO_PW = process.env.MONGO_PW
+const MONGO_CONNECTION_STRING = `mongodb+srv://${MONGO_USER}:${MONGO_PW}@${MONGO_URI}`
 var db;
 
 router.use(bodyParser.json());
@@ -48,14 +54,21 @@ let logger = (req, res, next) => {
 
 
 //setup mongodb and start server
-mongo.connect(MONGO_URI, (err, database) => {
-  db = database;
+const client = new MongoClient(MONGO_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true });
+client.connect(err => {
+  db = client.db("test")
+  if (err) console.log(`error ${err}`);
+  else console.log(`mongo active: ${db.databaseName}`)
+  // perform actions on the collection object
   app.listen(port, () => {
-    console.log(`listening on port: ${port}`);
-    if (err) console.log(`error ${err}`);
-    else console.log(`mongo active: ${db.databaseName}`)
+    console.log(`app is listening on port: ${port}`);
   });
-})
+  // client.close();
+});
+// mongo.connect(MONGO_CONNECTION_STRING, (err, database) => {
+//   console.log(`connecting to ${MONGO_URI}`)
+//   db = database;
+// })
 
 router.get('/', (req, res, next) => {
   res.sendFile(__dirname + '/index.html');
